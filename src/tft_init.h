@@ -25,6 +25,8 @@ private:
 
     void cmd(uint8_t c);
     void data(uint8_t d);
+    void dataBegin();  // Hold CS LOW for bulk data
+    void dataEnd();    // Release CS HIGH
     void setAddr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 };
 

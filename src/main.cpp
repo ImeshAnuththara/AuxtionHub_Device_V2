@@ -664,6 +664,13 @@
 #define POWER_PIN 12
 #define MAX17048_ADDR 0x36
 
+// ---------------- POWER & LATCH ----------------
+#define POWER_LATCH_PIN 4
+#define POWER_BTN_PIN   14
+
+// ---------------- LCD POWER ----------------
+#define LCD_SW_PIN  2   // GPIO2 -> Q9 MOSFET -> enables display GND
+
 // ---------------- TFT ----------------
 #define TFT_MOSI 23
 #define TFT_SCLK 18
@@ -733,6 +740,7 @@ Button btnUp(BTN2);
 Button btnLeft(BTN3);
 Button btnRight(BTN4);
 Button btnOK(BTN5);
+Button btnPower(POWER_BTN_PIN);
 
 volatile bool i2cBusy = false;
 bool wifiConnected = false;
@@ -755,13 +763,16 @@ unsigned long lastKeyTime = 0;
 
 unsigned long lastWiFiCheck = 0;
 const unsigned long WIFI_INTERVAL = 5000; // check every 5 sec
-
+unsigned long lastMQTTReconnect = 0;
 
 void mqttCallback(char* topic, byte* payload, unsigned int length);
 void updateBattery();
+void updateTime();
 void updateInputs();
 char readKeypad();  
 bool readNFC(uint8_t *uid, uint8_t &length);
+void checkMQTT();
+void connectMQTT();
 
 // ---------------- I2C LOCK ----------------
 bool i2cLock() {
@@ -774,22 +785,46 @@ void i2cUnlock() { i2cBusy = false; }
 
 // ---------------- SETUP ----------------
 void setup() {
+    // ---------------- LATCH POWER ON ----------------
+    pinMode(POWER_LATCH_PIN, OUTPUT);
+    digitalWrite(POWER_LATCH_PIN, HIGH);
+
     Serial.begin(115200);
+    
+    // Enable display ground (CRITICAL - Q9 MOSFET on GPIO2)
+    pinMode(LCD_SW_PIN, OUTPUT);
+    digitalWrite(LCD_SW_PIN, HIGH);
+    Serial.println("[DEBUG] LCD ground enabled (GPIO2 HIGH)");
+    delay(50);  // Let display power stabilize
+    
     Wire.begin(SDA_PIN, SCL_PIN);
     pinMode(POWER_PIN, OUTPUT);
     digitalWrite(POWER_PIN, HIGH);
-    Wire.begin(SDA_PIN, SCL_PIN);
-    pinMode(BTN5, INPUT);   // IMPORTANT FIX
+    pinMode(BTN5, INPUT_PULLUP);   // IMPORTANT FIX: Prevent floating pin from triggering AP mode
     Serial.println("Buttons initialized (INPUT)");
+    Serial.println("[DEBUG] Starting TFT init...");
+    
+    // Disable SD Card SPI interference (CS = GPIO 13)
+    pinMode(13, OUTPUT);
+    digitalWrite(13, HIGH);
+    delay(10);
+
     tft.begin();
+    Serial.println("[DEBUG] TFT init done. Filling screen RED...");
     delay(100);
-    tft.fillScreen(0xffff);
+    tft.fillScreen(0xF800);  // RED for diagnostic - should be clearly visible!
+    Serial.println("[DEBUG] Fill screen done. Waiting 3s...");
+    delay(3000);  // Wait 3 seconds to see if RED appears
+    Serial.println("[DEBUG] Init LVGL...");
     lvgl_init();
+    Serial.println("[DEBUG] Drawing logo...");
     // Show logo
     uint16_t x = (240 - 240) / 2;
     uint16_t y = (320 - 80) / 2;
     tft.drawImage(x, y, LOGO_WIDTH, LOGO_HEIGHT, myImage);
+    Serial.println("[DEBUG] Logo drawn. Waiting 3s...");
     delay(3000);
+    Serial.println("[DEBUG] Creating topbar...");
     create_topbar(240, 320);
     // MCP23X17
     if (!mcp.begin_I2C(0x20)) {
@@ -809,15 +844,37 @@ void setup() {
     }
         // Wi-Fi in normal mode
     if (!apModeActive) {
-        preferences.begin("wifi-config", true);
-        String ssid = preferences.getString("ssid", "");
-        String pass = preferences.getString("password", "");
-        preferences.end();
+        // Hardcoded Wi-Fi credentials
+        String ssid = "SLT-Fiber-2.4G_2880";
+        String pass = "coin6657";
         if (ssid.length() > 0) {
             set_wifi_connected(false);
             set_mqtt_connected(false);
             WiFi.begin(ssid.c_str(), pass.c_str());
-            Serial.println("Connecting to WiFi: " + ssid);
+            Serial.print("Connecting to WiFi: ");
+            Serial.println(ssid);
+            
+            // Wait for connection
+            int timeout = 20; // 10 seconds (20 * 500ms)
+            while (WiFi.status() != WL_CONNECTED && timeout > 0) {
+                delay(500);
+                Serial.print(".");
+                timeout--;
+            }
+            Serial.println();
+            
+            if (WiFi.status() == WL_CONNECTED) {
+                Serial.println("WiFi Connected!");
+                Serial.print("IP Address: ");
+                Serial.println(WiFi.localIP());
+                set_wifi_connected(true);
+                
+                // Initialize NTP Time (Sri Lanka +05:30)
+                configTime(19800, 0, "pool.ntp.org", "time.nist.gov");
+                Serial.println("Waiting for NTP time sync...");
+            } else {
+                Serial.println("WiFi Connection Failed!");
+            }
         }
     }else{
         apMode.begin();
@@ -838,14 +895,40 @@ void setup() {
     btnLeft.begin();
     btnRight.begin();
     btnOK.begin();
+    btnPower.begin();
 
     Serial.println("Hardware initialized");
 }
 
+void checkPowerOff() {
+    if (btnPower.pressed()) {
+        Serial.println("Power OFF requested! Please release the button...");
+        
+        // Wait until the power button is released
+        // Assuming LOW means pressed, we wait until it goes HIGH
+        while (digitalRead(POWER_BTN_PIN) == LOW) {
+            delay(10);
+        }
+        delay(100); // Small debounce delay after release
+        
+        Serial.println("Button released. Setting Latch Pin 4 LOW...");
+        Serial.flush(); // Ensure the message prints before power dies
+        
+        digitalWrite(POWER_LATCH_PIN, LOW);
+        while (1) {
+            delay(10);
+        }
+    }
+}
+
 // ---------------- LOOP ----------------
 void loop() {
+    lv_timer_handler(); // Required for LVGL to update the display!
+    
     updateInputs();
+    checkPowerOff();
     updateBattery();
+    updateTime();
 
     // ---------------- Keypad ----------------
     char key = readKeypad();
@@ -873,6 +956,7 @@ void updateInputs() {
     btnLeft.update();
     btnRight.update();
     btnOK.update();
+    btnPower.update();
 }
 
 // ---------------- BATTERY ----------------
@@ -883,8 +967,23 @@ void updateBattery() {
 
     uint8_t pct = (uint8_t)battery.readPercent();
     Serial.print("Battery: "); Serial.print(pct); Serial.println("%");
+    set_battery_percent(pct); // Update LVGL screen
 
     i2cUnlock();
+}
+
+// ---------------- TIME ----------------
+unsigned long lastTimeUpdate = 0;
+void updateTime() {
+    if (millis() - lastTimeUpdate >= 60000 || lastTimeUpdate == 0) {
+        lastTimeUpdate = millis() == 0 ? 1 : millis();
+        struct tm timeinfo;
+        if (getLocalTime(&timeinfo)) {
+            char timeStringBuff[50];
+            strftime(timeStringBuff, sizeof(timeStringBuff), "%H:%M %d/%m", &timeinfo);
+            set_date_time(timeStringBuff);
+        }
+    }
 }
 
 // ---------------- KEYPAD ----------------
@@ -959,7 +1058,7 @@ void checkMQTT() {
 
     if (!mqttClient.connected()) {
         Serial.println("Reconnecting MQTT...");
-        connectMQTT();   // your existing function
+        connectMQTT();
     } else {
         mqttClient.loop();
     }
