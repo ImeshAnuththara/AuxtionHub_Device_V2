@@ -1035,13 +1035,6 @@ void loop() {
         case UI_AP_MODE:
             break;
         case UI_AUCTION:
-            if (millis() - lastAuctionRequest > ITEMS_INTERVAL) {
-                lastAuctionRequest = millis();
-                String msgId = "GET_AUCTION_" + String(lastAuctionRequest);
-                if (mqttConnected) {
-                    auction.publishRequest("GET_AUCTION", msgId.c_str());
-                }
-            }
             handleAuctionState();
             break;
 
@@ -1058,13 +1051,6 @@ void loop() {
             break;
 
         case UI_ITEMS:
-            if (!is_bid_popup_active() && (millis() - lastItemsRequest > ITEMS_INTERVAL)) {
-                lastItemsRequest = millis();
-                String msgId = "GET_ITEMS_" + String(lastItemsRequest);
-                if (mqttConnected && selectedAuctionId.length() > 0) {
-                    items.publishRequest(selectedAuctionId.c_str(), msgId.c_str());
-                }
-            }
             handleItemsState();
             break;
 
