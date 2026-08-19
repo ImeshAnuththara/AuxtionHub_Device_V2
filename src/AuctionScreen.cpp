@@ -25,16 +25,16 @@
 // lv_obj_t* loading_label = nullptr;
 
 // // Color definitions
-// #define COLOR_PRIMARY     lv_color_hex(0x53BDEB)  // Blue
-// #define COLOR_SUCCESS     lv_color_hex(0x00A884)  // Green
-// #define COLOR_DANGER      lv_color_hex(0xEF4444)  // Red
-// #define COLOR_WARNING     lv_color_hex(0xFFB74D)  // Orange
-// #define COLOR_DARK        lv_color_hex(0xE9EDEF)  // Dark Gray
+// #define COLOR_PRIMARY     lv_color_hex(0x5C9ACF)  // Blue
+// #define COLOR_SUCCESS     lv_color_hex(0x68B382)  // Green
+// #define COLOR_DANGER      lv_color_hex(0xD96B6B)  // Red
+// #define COLOR_WARNING     lv_color_hex(0xD19A66)  // Orange
+// #define COLOR_DARK        lv_color_hex(0xD1D1D6)  // Dark Gray
 // #define COLOR_LIGHT       lv_color_hex(0xF5F5F5)  // Light Gray
-// #define COLOR_WHITE       lv_color_hex(0x202C33)  // White
+// #define COLOR_WHITE       lv_color_hex(0x2B2B36)  // White
 // #define COLOR_BLACK       lv_color_hex(0x000000)  // Black
-// #define COLOR_BORDER      lv_color_hex(0x374045)  // Light Gray Border
-// #define COLOR_SELECTED    lv_color_hex(0x2A3942)  // Light Pink
+// #define COLOR_BORDER      lv_color_hex(0x3A3A4A)  // Light Gray Border
+// #define COLOR_SELECTED    lv_color_hex(0x3B3B4A)  // Light Pink
 
 // // Unicode Icons
 // #define ICON_USER         "\uF07B"  // User icon
@@ -590,14 +590,14 @@ lv_obj_t *page_indicator = nullptr;
 lv_obj_t *loading_label = nullptr;
 
 // Color definitions
-#define COLOR_PRIMARY lv_color_hex(0x53BDEB)
-#define COLOR_SUCCESS lv_color_hex(0x00A884)
-#define COLOR_DANGER lv_color_hex(0xEF4444)
-#define COLOR_WARNING lv_color_hex(0xFFB74D)
-#define COLOR_DARK lv_color_hex(0xE9EDEF)
-#define COLOR_WHITE lv_color_hex(0x202C33)
-#define COLOR_BORDER lv_color_hex(0x374045)
-#define COLOR_SELECTED lv_color_hex(0x2A3942)
+#define COLOR_PRIMARY lv_color_hex(0x5C9ACF)
+#define COLOR_SUCCESS lv_color_hex(0x68B382)
+#define COLOR_DANGER lv_color_hex(0xD96B6B)
+#define COLOR_WARNING lv_color_hex(0xD19A66)
+#define COLOR_DARK lv_color_hex(0xD1D1D6)
+#define COLOR_WHITE lv_color_hex(0x2B2B36)
+#define COLOR_BORDER lv_color_hex(0x3A3A4A)
+#define COLOR_SELECTED lv_color_hex(0x3B3B4A)
 
 // // Unicode Icons
 #define ICON_USER "\uF015"   // User icon (MDI Account icon U000F0004)

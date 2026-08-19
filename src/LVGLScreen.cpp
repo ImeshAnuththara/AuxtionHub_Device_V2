@@ -33,7 +33,7 @@ void lvgl_init() {
     lv_disp_drv_register(&drv);
 
     // Force the default screen background to dark theme globally
-    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x0B141A), 0);
+    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x1E1E24), 0);
 
     // Attach 1ms tick
     lvgl_tick.attach_ms(1, lvgl_tick_cb);

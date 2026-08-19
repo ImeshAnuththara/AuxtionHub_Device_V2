@@ -113,16 +113,16 @@ void set_date_time(const char* datetime) {
 void set_dark_mode(bool enable) {
     dark_mode_state = enable;
     if (enable) {
-        lv_obj_set_style_bg_color(top_bar, lv_color_hex(0x202C33), 0);
-        lv_obj_set_style_text_color(label_battery, lv_color_hex(0xE9EDEF), 0);
-        lv_obj_set_style_text_color(label_battery_percent, lv_color_hex(0xE9EDEF), 0);
-        lv_obj_set_style_text_color(label_wifi, lv_color_hex(0xE9EDEF), 0);
-        lv_obj_set_style_text_color(label_date, lv_color_hex(0xE9EDEF), 0);
+        lv_obj_set_style_bg_color(top_bar, lv_color_hex(0x2B2B36), 0);
+        lv_obj_set_style_text_color(label_battery, lv_color_hex(0xD1D1D6), 0);
+        lv_obj_set_style_text_color(label_battery_percent, lv_color_hex(0xD1D1D6), 0);
+        lv_obj_set_style_text_color(label_wifi, lv_color_hex(0xD1D1D6), 0);
+        lv_obj_set_style_text_color(label_date, lv_color_hex(0xD1D1D6), 0);
     } else {
-        lv_obj_set_style_bg_color(top_bar, lv_color_hex(0x202C33), 0);
-        lv_obj_set_style_text_color(label_battery, lv_color_hex(0xE9EDEF), 0);
-        lv_obj_set_style_text_color(label_battery_percent, lv_color_hex(0xE9EDEF), 0);
-        lv_obj_set_style_text_color(label_wifi, lv_color_hex(0xE9EDEF), 0);
-        lv_obj_set_style_text_color(label_date, lv_color_hex(0xE9EDEF), 0);
+        lv_obj_set_style_bg_color(top_bar, lv_color_hex(0x2B2B36), 0);
+        lv_obj_set_style_text_color(label_battery, lv_color_hex(0xD1D1D6), 0);
+        lv_obj_set_style_text_color(label_battery_percent, lv_color_hex(0xD1D1D6), 0);
+        lv_obj_set_style_text_color(label_wifi, lv_color_hex(0xD1D1D6), 0);
+        lv_obj_set_style_text_color(label_date, lv_color_hex(0xD1D1D6), 0);
     }
 }

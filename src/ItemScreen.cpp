@@ -28,14 +28,14 @@
 // LV_FONT_DECLARE(lv_font_montserrat_14);
 
 // // ================== COLORS ==================
-// #define COLOR_PRIMARY     lv_color_hex(0x53BDEB)
-// #define COLOR_SUCCESS     lv_color_hex(0x00A884)
-// #define COLOR_DANGER      lv_color_hex(0xEF4444)
-// #define COLOR_WARNING     lv_color_hex(0xFFB74D)
-// #define COLOR_DARK        lv_color_hex(0xE9EDEF)
-// #define COLOR_WHITE       lv_color_hex(0x202C33)
-// #define COLOR_BORDER      lv_color_hex(0x374045)
-// #define COLOR_SELECTED    lv_color_hex(0x2A3942)
+// #define COLOR_PRIMARY     lv_color_hex(0x5C9ACF)
+// #define COLOR_SUCCESS     lv_color_hex(0x68B382)
+// #define COLOR_DANGER      lv_color_hex(0xD96B6B)
+// #define COLOR_WARNING     lv_color_hex(0xD19A66)
+// #define COLOR_DARK        lv_color_hex(0xD1D1D6)
+// #define COLOR_WHITE       lv_color_hex(0x2B2B36)
+// #define COLOR_BORDER      lv_color_hex(0x3A3A4A)
+// #define COLOR_SELECTED    lv_color_hex(0x3B3B4A)
 
 // // ================== ICONS ==================
 // #define ICON_ARROW_LEFT   "\uF053"
@@ -1158,14 +1158,14 @@ static void show_temp_message(const char* title, const char* message, uint32_t d
 LV_FONT_DECLARE(lv_font_montserrat_14);
 
 // ================== COLORS ==================
-#define COLOR_PRIMARY     lv_color_hex(0x53BDEB)
-#define COLOR_SUCCESS     lv_color_hex(0x00A884)
-#define COLOR_DANGER      lv_color_hex(0xEF4444)
-#define COLOR_WARNING     lv_color_hex(0xFFB74D)
-#define COLOR_DARK        lv_color_hex(0xE9EDEF)
-#define COLOR_WHITE       lv_color_hex(0x202C33)
-#define COLOR_BORDER      lv_color_hex(0x374045)
-#define COLOR_SELECTED    lv_color_hex(0x2A3942)
+#define COLOR_PRIMARY     lv_color_hex(0x5C9ACF)
+#define COLOR_SUCCESS     lv_color_hex(0x68B382)
+#define COLOR_DANGER      lv_color_hex(0xD96B6B)
+#define COLOR_WARNING     lv_color_hex(0xD19A66)
+#define COLOR_DARK        lv_color_hex(0xD1D1D6)
+#define COLOR_WHITE       lv_color_hex(0x2B2B36)
+#define COLOR_BORDER      lv_color_hex(0x3A3A4A)
+#define COLOR_SELECTED    lv_color_hex(0x3B3B4A)
 
 // ================== ICONS ==================
 #define ICON_ARROW_LEFT   LV_SYMBOL_LEFT

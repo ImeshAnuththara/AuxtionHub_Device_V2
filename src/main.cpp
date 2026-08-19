@@ -704,7 +704,7 @@ void show_refresh_popup(const char* message) {
     refresh_popup_box = lv_obj_create(lv_layer_top());
     lv_obj_set_size(refresh_popup_box, 200, 70);
     lv_obj_center(refresh_popup_box);
-    lv_obj_set_style_bg_color(refresh_popup_box, lv_color_hex(0x202C33), 0);
+    lv_obj_set_style_bg_color(refresh_popup_box, lv_color_hex(0x2B2B36), 0);
     lv_obj_set_style_border_color(refresh_popup_box, lv_color_hex(0x00A859), 0);
     lv_obj_set_style_border_width(refresh_popup_box, 2, 0);
     lv_obj_set_style_radius(refresh_popup_box, 10, 0);
@@ -712,7 +712,7 @@ void show_refresh_popup(const char* message) {
 
     lv_obj_t* label = lv_label_create(refresh_popup_box);
     lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
-    lv_obj_set_style_text_color(label, lv_color_hex(0xE9EDEF), 0);
+    lv_obj_set_style_text_color(label, lv_color_hex(0xD1D1D6), 0);
     lv_label_set_text(label, message);
     lv_obj_center(label);
 
@@ -1365,9 +1365,9 @@ void show_pin_ui() {
     
     lv_obj_set_size(pin_card, 240, 180);
     lv_obj_center(pin_card);
-    lv_obj_set_style_bg_color(pin_card, lv_color_hex(0x202C33), 0);
+    lv_obj_set_style_bg_color(pin_card, lv_color_hex(0x2B2B36), 0);
     lv_obj_set_style_border_width(pin_card, 1, 0);
-    lv_obj_set_style_border_color(pin_card, lv_color_hex(0x374045), 0);
+    lv_obj_set_style_border_color(pin_card, lv_color_hex(0x3A3A4A), 0);
     lv_obj_set_style_radius(pin_card, 15, 0);
     lv_obj_set_style_shadow_width(pin_card, 8, 0);
     lv_obj_set_style_shadow_color(pin_card, lv_color_hex(0x888888), 0);
@@ -1376,7 +1376,7 @@ void show_pin_ui() {
     lv_obj_t* title = lv_label_create(pin_card);
     if (title) {
         lv_label_set_text(title, " Enter 4-Digit PIN");
-        lv_obj_set_style_text_color(title, lv_color_hex(0xE9EDEF), 0);
+        lv_obj_set_style_text_color(title, lv_color_hex(0xD1D1D6), 0);
         lv_obj_set_style_text_font(title, &lv_font_montserrat_14, 0);
         lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
     }
@@ -1386,7 +1386,7 @@ void show_pin_ui() {
     if (box_container) {
         lv_obj_set_size(box_container, 200, 70);
         lv_obj_align(box_container, LV_ALIGN_TOP_MID, 0, 55);
-        lv_obj_set_style_bg_color(box_container, lv_color_hex(0x0B141A), 0);
+        lv_obj_set_style_bg_color(box_container, lv_color_hex(0x1E1E24), 0);
         lv_obj_set_style_border_width(box_container, 0, 0);
         lv_obj_set_style_pad_all(box_container, 0, 0);
         lv_obj_set_flex_flow(box_container, LV_FLEX_FLOW_ROW);
@@ -1399,16 +1399,16 @@ void show_pin_ui() {
             lv_obj_t* box = lv_obj_create(box_container);
             if (box) {
                 lv_obj_set_size(box, 40, 40);
-                lv_obj_set_style_border_color(box, lv_color_hex(0x374045), 0);
+                lv_obj_set_style_border_color(box, lv_color_hex(0x3A3A4A), 0);
                 lv_obj_set_style_border_width(box, 2, 0);
                 lv_obj_set_style_radius(box, 10, 0);
-                lv_obj_set_style_bg_color(box, lv_color_hex(0x202C33), 0);
+                lv_obj_set_style_bg_color(box, lv_color_hex(0x2B2B36), 0);
                 
                 lv_obj_t* label = lv_label_create(box);
                 if (label) {
                     lv_label_set_text(label, "○");
                     lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
-                    lv_obj_set_style_text_color(label, lv_color_hex(0xE9EDEF), 0);
+                    lv_obj_set_style_text_color(label, lv_color_hex(0xD1D1D6), 0);
                     lv_obj_center(label);
                     pin_boxes[i] = label;
                 }
@@ -1468,7 +1468,7 @@ void update_pin_display() {
             if (i < pinInput.length()) {
                 char digit[2] = {pinInput[i], '\0'};
                 lv_label_set_text(pin_boxes[i], digit);
-                lv_obj_set_style_text_color(pin_boxes[i], lv_color_hex(0x53BDEB), 0);
+                lv_obj_set_style_text_color(pin_boxes[i], lv_color_hex(0x5C9ACF), 0);
                 lv_obj_set_style_text_font(pin_boxes[i], &lv_font_montserrat_14, 0);
             } else {
                 lv_label_set_text(pin_boxes[i], "○");
@@ -1483,13 +1483,13 @@ void update_pin_display() {
             lv_obj_t* box = lv_obj_get_parent(pin_boxes[i]);
             if (box) {
                 if (i == currentBox && pinInput.length() < PIN_LENGTH) {
-                    lv_obj_set_style_border_color(box, lv_color_hex(0x53BDEB), 0);
+                    lv_obj_set_style_border_color(box, lv_color_hex(0x5C9ACF), 0);
                     lv_obj_set_style_border_width(box, 3, 0);
-                    lv_obj_set_style_bg_color(box, lv_color_hex(0x2A3942), 0);
+                    lv_obj_set_style_bg_color(box, lv_color_hex(0x3B3B4A), 0);
                 } else {
                     lv_obj_set_style_border_color(box, lv_color_hex(0x444444), 0);
                     lv_obj_set_style_border_width(box, 2, 0);
-                    lv_obj_set_style_bg_color(box, lv_color_hex(0x202C33), 0);
+                    lv_obj_set_style_bg_color(box, lv_color_hex(0x2B2B36), 0);
                 }
             }
         }
