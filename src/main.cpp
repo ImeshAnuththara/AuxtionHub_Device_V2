@@ -862,9 +862,33 @@ void handlePinState() {
     }
 }
 
+TaskHandle_t PowerTask;
+void powerMonitorTask(void * parameter) {
+    unsigned long pressStartTime = 0;
+    while (true) {
+        if (millis() > 1000) { // Give it 1 second to boot before checking
+            if (digitalRead(Latch_ISR) == HIGH) {
+                if (pressStartTime == 0) {
+                    pressStartTime = millis();
+                } else if (millis() - pressStartTime >= 3000) {
+                    Serial.println("3s long press detected (Parallel Task): Shutting down device...");
+                    digitalWrite(Latch_ON, LOW);
+                    while(true) delay(100);
+                }
+            } else {
+                pressStartTime = 0;
+            }
+        }
+        delay(50); // Yield to watchdogs
+    }
+}
+
 void setup() {
     pinMode(Latch_ON,OUTPUT);digitalWrite(Latch_ON,HIGH);
     pinMode(Latch_ISR, INPUT); 
+    
+    // Start the parallel power monitoring task on Core 0 immediately
+    xTaskCreatePinnedToCore(powerMonitorTask, "PowerTask", 2048, NULL, 1, &PowerTask, 0);
     pinMode(NFC_ON,OUTPUT);digitalWrite(NFC_ON,LOW);
     pinMode(pin_LCD, OUTPUT);digitalWrite(pin_LCD, HIGH);
     Serial.begin(115200);
@@ -975,33 +999,7 @@ void setup() {
 
 // ------------------ LOOP ------------------
 void loop() {
-    // 3-Second Long Press requirement for Power Off
-    if (millis() - startupTime > 3000) {
-        static unsigned long powerBtnPressTime = 0;
-        
-        if (digitalRead(Latch_ISR) == HIGH) {
-            if (powerBtnPressTime == 0) {
-                powerBtnPressTime = millis(); // Start timer
-            } else if (millis() - powerBtnPressTime >= 3000) {
-                Serial.println("🔴 3s long press detected: Shutting down device...");
-                // Brief descending shutdown tone
-                ledcSetup(0, 2000, 8);
-                ledcAttachPin(buzzer, 0);
-                ledcWriteTone(0, 1500);
-                delay(60);
-                ledcWriteTone(0, 800);
-                delay(100);
-                ledcWriteTone(0, 0);
-                ledcDetachPin(buzzer);
-                pinMode(buzzer, INPUT); // Float buzzer
-                
-                digitalWrite(Latch_ON, LOW);
-                while(true) delay(100); // Block until power dies
-            }
-        } else {
-            powerBtnPressTime = 0; // Reset timer when released
-        }
-    }
+    
     lv_timer_handler();
     if (refresh_popup_box != nullptr && (millis() - refresh_popup_time > 1500)) {
         hide_refresh_popup();
