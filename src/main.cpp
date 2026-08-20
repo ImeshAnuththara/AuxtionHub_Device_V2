@@ -1246,6 +1246,9 @@ void changeState(UIState newState) {
         show_custom_loading("Scan NFC Card...");
         nfcState = NFC_WAIT_FOR_CARD;
         nfcStartTime = millis();
+    } else if (newState == UI_AUCTION) {
+        show_auction_screen();
+        refresh_display();
     }
 }
 void resetAuctionSelection() {
