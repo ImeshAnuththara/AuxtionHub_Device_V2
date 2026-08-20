@@ -98,7 +98,7 @@ SD_Manager sd(TFT_SCLK, SD_MISO, TFT_MOSI, SD_CS, SD_BTN);
 Adafruit_MCP23X17 mcp;
 KeypadManager keypad(&mcp, rowPins, colPins, keys);
 NFCManager nfc(-1,-1);
-BatteryManager battery(MAX17048_ADDR, 3.5, 4.16);
+BatteryManager battery(MAX17048_ADDR, 3.5, 4.2);
 //LEDManager leds(&mcp, ledPins, 8);
 
 // Buttons
@@ -254,6 +254,29 @@ void sendNormalMessage(const char* msg) {
 void updateBattery() {
     if (millis() - lastBatteryUpdate > BATTERY_INTERVAL) {
         lastBatteryUpdate = millis();
+        float voltage = battery.readVoltage();
+        
+        if (voltage <= 3.6 && voltage > 1.0) {
+            Serial.println("Battery is low! Shutting down...");
+            show_custom_loading("Battery Low!\nPowering off...");
+            lv_timer_handler(); // Force screen update
+            
+            // Brief descending shutdown tone
+            ledcSetup(0, 2000, 8);
+            ledcAttachPin(buzzer, 0);
+            ledcWriteTone(0, 1500);
+            delay(60);
+            ledcWriteTone(0, 800);
+            delay(100);
+            ledcWriteTone(0, 0);
+            ledcDetachPin(buzzer);
+            pinMode(buzzer, INPUT); 
+            
+            delay(2000); // Give user 2 seconds to see the message
+            digitalWrite(Latch_ON, LOW); // Kill power via MOSFET on IO4
+            while(true) delay(100);
+        }
+        
         uint8_t pct = (uint8_t)battery.readPercent();
         set_battery_percent(pct);
         Serial.print("Battery: "); Serial.print(pct); Serial.println("%");
