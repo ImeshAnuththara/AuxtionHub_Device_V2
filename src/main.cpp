@@ -658,14 +658,23 @@ void show_custom_loading_timeout(const char* message, uint32_t timeout_ms) {
     lv_obj_add_flag(arrow_down, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(page_indicator, LV_OBJ_FLAG_HIDDEN);
 
-    // Create a one-shot timer to hide loading after timeout
+    // Create a one-shot timer to restore UI state after timeout
     lv_timer_t* t = lv_timer_create([](lv_timer_t* timer){
-        // Hide loading
-        lv_obj_add_flag(loading_label, LV_OBJ_FLAG_HIDDEN);
-        // Restore auction card
-        //lv_obj_clear_flag(main_card, LV_OBJ_FLAG_HIDDEN);
-        //lv_obj_clear_flag(page_indicator, LV_OBJ_FLAG_HIDDEN);
-        //update_arrow_visibility();
+        
+        if (currentUI == UI_AUCTION) {
+            lv_obj_add_flag(loading_label, LV_OBJ_FLAG_HIDDEN);
+            show_auction_screen();
+            refresh_display();
+        } else if (currentUI == UI_WAITING_NFC) {
+            // Restore NFC prompt
+            if (loading_label) {
+                lv_label_set_text(loading_label, "Scan NFC Card...");
+                lv_obj_clear_flag(loading_label, LV_OBJ_FLAG_HIDDEN);
+            }
+        } else {
+            // Default behavior
+            lv_obj_add_flag(loading_label, LV_OBJ_FLAG_HIDDEN);
+        }
 
         lv_timer_del(timer); // Delete this timer
     }, timeout_ms, nullptr);
