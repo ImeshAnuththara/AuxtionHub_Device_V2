@@ -871,9 +871,20 @@ void powerMonitorTask(void * parameter) {
                 if (pressStartTime == 0) {
                     pressStartTime = millis();
                 } else if (millis() - pressStartTime >= 3000) {
-                    Serial.println("3s long press detected (Parallel Task): Shutting down device...");
+                                        Serial.println("3s long press detected (Parallel Task): Shutting down device...");
+                    // Brief descending shutdown tone
+                    ledcSetup(0, 2000, 8);
+                    ledcAttachPin(buzzer, 0);
+                    ledcWriteTone(0, 1500);
+                    delay(60);
+                    ledcWriteTone(0, 800);
+                    delay(100);
+                    ledcWriteTone(0, 0);
+                    ledcDetachPin(buzzer);
+                    pinMode(buzzer, INPUT); // Float buzzer
+                    
                     digitalWrite(Latch_ON, LOW);
-                    while(true) delay(100);
+                    while(true) delay(100); // Block until power dies
                 }
             } else {
                 pressStartTime = 0;
