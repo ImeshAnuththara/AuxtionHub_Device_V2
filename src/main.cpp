@@ -430,18 +430,23 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 void setupMQTTCallbacks() {
     auction.onAction("GET_AUCTION", [](JsonDocument& doc){
         Serial.println("✅ Auctions received");       
-        if (auction.lastResponse.Auctions.size() > 0) {
+                if (auction.lastResponse.Auctions.size() > 0) {
             update_auctions_from_mqtt(
                 auction.lastResponse.Auctions.data(),
                 auction.lastResponse.Auctions.size()
             ); 
-            print_current_auction_details();
-            auctionDataLoaded = true;  // Enable navigation           
-            // Hide loading
-            hide_custom_loading();          
-            hide_refresh_popup();
-            // Show auction screen (now that we have data)
-            show_auction_screen();
+            
+            if (!auctionDataLoaded) {
+                auctionDataLoaded = true;             
+                hide_custom_loading();          
+                hide_refresh_popup();
+                show_auction_screen();
+            } else {
+                if (currentUI == UI_AUCTION) {
+                    hide_refresh_popup();
+                    refresh_display();
+                }
+            }
         } else {
             Serial.println("No auctions in response");
             clear_auction_data();
@@ -548,29 +553,7 @@ void setupMQTTCallbacks() {
         Serial.println(responseAuctionId);
         
         if (selectedAuctionId != responseAuctionId) {
-            Serial.println("Items for wrong auction. Returning to auction window...");
-            auctionDataLoaded=true;
-            // Hide item screen and show auction screen
-            hide_item_screen();
-            //show_auction_screen();           
-            // Reset UI state to auction
-            currentUI = UI_WAITING_NFC;           
-            // Clear all selected auction data
-            selectedAuctionId = "";
-            selectedAuctionMode = "";
-            selectedAuctionName = "";            
-            // Reset NFC state
-            nfcState = NFC_IDLE;           
-            // Reset item index
-            item_index = 0;            
-            // Show timeout message
-            show_custom_loading_timeout("Auction ID Mismatch", 2000);
-            
-            // Request fresh auction list
-            String msgId = "INIT_" + String(millis());
-            auction.publishRequest("GET_AUCTION", msgId.c_str());
-            
-            Serial.println("Returned to auction window");
+            Serial.println("Items for wrong auction pushed by AWS. Ignoring...");
             return;
         }
         auctionDataLoaded=true;
