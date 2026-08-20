@@ -974,6 +974,21 @@ void setup() {
 }
 
 
+void publish_heartbeat() {
+    if (!mqttConnected || !auctionDataLoaded) return;
+    String msgId = "HB_" + String(millis());
+    JsonDocument doc;
+    doc["Action"] = "HEARTBEAT";
+    doc["Message_ID"] = msgId;
+    doc["Device_ID"] = deviceId;
+    if (selectedAuctionId.length() > 0) {
+        doc["Current_Auction"] = selectedAuctionId;
+    }
+    char buffer[256];
+    size_t n = serializeJson(doc, buffer);
+    mqttClient.publish(AUCTION_REQ_TOPIC, buffer, n);
+}
+
 // ------------------ LOOP ------------------
 void loop() {
     // 3-Second Long Press requirement for Power Off
@@ -1018,6 +1033,14 @@ void loop() {
         return;
     } 
     handleNetwork();  
+    
+    // Heartbeat every 5 seconds to trigger AWS DB Sync
+    static unsigned long lastHeartbeatTime = 0;
+    if (mqttConnected && (millis() - lastHeartbeatTime > 5000)) {
+        lastHeartbeatTime = millis();
+        publish_heartbeat();
+    }
+
     updateInputs();      // Buttons + keypad + NFC
 
     // Runtime AP mode switching disabled - button is now useless after startup per user request
